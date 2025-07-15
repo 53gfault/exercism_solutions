@@ -2,8 +2,9 @@
 
 void
 grade_school::school::add(const std::string& name, int grade) {
-    roster_[grade].emplace_back(name);
-    std::sort(roster_[grade].begin(), roster_[grade].end());
+    auto& names = roster_[grade];
+    auto it = std::lower_bound(names.begin(), names.end(), name);
+    names.insert(it, name);
 }
 const std::vector<std::string>
 grade_school::school::grade(int grade) const {
