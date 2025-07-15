@@ -5,7 +5,7 @@ trinary::to_decimal(const std::string& num) {
     int res{0};
     int pos = num.size() - 1;
     for(const char& ch: num) {
-        if(!std::isdigit(ch))
+        if(ch < '0' || ch > '2')
             return 0;
         res += std::pow(3, pos--) * (ch - '0');
     }
