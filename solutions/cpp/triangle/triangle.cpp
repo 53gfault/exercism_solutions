@@ -2,15 +2,7 @@
 
 bool
 triangle::is_triangle(const double& a, const double& b, const double& c) {
-    if(!a || !b || !c)
-        return false;
-    if(a + b < c)
-        return false;
-    if(b + c < a)
-        return false;
-    if(c + a < b)
-        return false;
-    return true;
+    return a + b > c && b + c > a && c + a > b;
 }
 
 triangle::flavor
