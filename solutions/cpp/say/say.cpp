@@ -1,64 +1,61 @@
 #include "say.h"
 
+
 std::string
-say::get_units_tens_string(const int& num) {
-    std::cout << "Units-tens part: " << num << std::endl;
+say::stringify_two_digits(const int& num) {
     if(num < 10)
-        return units_strings_.at(num);
+        return ones_.at(num);
     if(num < 20)
-        return teens_strings_.at(num - 10);
+        return teens_.at(num - 10);
     if(num % 10 == 0)
-        return tens_strings_.at(num / 10 - 2);
-    return tens_strings_.at(num / 10 - 2) + "-" + units_strings_.at(num % 10);
+        return tens_.at(num / 10 - 1);
+    return tens_.at(num / 10 - 1) + "-" + ones_.at(num % 10);
+}
+
+std::string
+say::stringify_three_digits(const int& num) {
+    if(num < 100)
+        return stringify_two_digits(num);
+    std::string result = ones_.at(num / 100) + " hundred";
+    if(num % 100 != 0)
+        result += " " + stringify_two_digits(num % 100);
+    return result;
 }
 
 
 std::string
-say::get_part_string(const int& part_num, int part_index) {
-    std::cout << "Part string: " << part_num << std::endl;
-    if(part_num == 0)
-        return "";
-    std::string part_suffix = "";
-    if(part_index > 0)
-        part_suffix = " " + part_strings_.at(part_index);
-    std::string part_prefix;
-    if(part_num < 100)
-        part_prefix = get_units_tens_string(part_num);
-    else {
-        part_prefix = units_strings_.at(part_num / 100) + " hundred";
-        if(part_num % 100 != 0)
-            part_prefix += " " + get_units_tens_string(part_num % 100);
+say::stringify_three_digits_chunk(const int& num, const int& segment) {
+    std::string result = stringify_three_digits(num);
+    if(result.empty() || !segment)
+        return result;
+    return result + " " + segments_.at(segment);
+}
+
+int
+say::get_three_digits_chunk(long long& num) {
+    int partial_num = 0, rem = 0;
+    for (auto i : {0, 1, 2}) {
+        rem = num % 10;
+        partial_num = rem * (int)pow(10, i) + partial_num;
+        num /= 10;
     }
-    return part_prefix + part_suffix;
-    
+    return partial_num;
 }
 
 std::string
 say::in_english(long long num) {
-    std::cout << "Received num: " << num << std::endl;
     say::validate(num);
-    if(num < 100)
-        return get_units_tens_string(num);
-    std::string result, part_result;
-    int part_num = 0, part_index = 0, digit_count = 0;
-    while(num != 0){
-        int rem = num % 10;
-        part_num = rem * (int)pow(10, digit_count) + part_num;
-        num /= 10;
-        digit_count++;
-        if(digit_count % 3 == 0) {
-            part_result = get_part_string(part_num, part_index++);
-            if(!part_result.empty() && !result.empty())
-                part_result += " ";
-            result = part_result + result;
-            part_num = digit_count = 0;
-        }
-    }
-    part_result = "";
-    if(digit_count % 3 != 0){
-        part_result = get_part_string(part_num, part_index++);
-        if(!part_result.empty() && !result.empty())
-            part_result += " ";
-    }
-    return part_result + result;
+    if(!num)
+        return "zero";
+    std::string result, partial_result, delim = "";
+    int segment = 0, partial_num = 0;
+    do {
+        partial_num = get_three_digits_chunk(num);
+        partial_result = stringify_three_digits_chunk(partial_num, segment++);
+        if(!result.empty() && !partial_result.empty())
+            delim = " ";
+        result = partial_result + delim + result;
+        delim = "";
+    } while(num != 0);
+    return result;
 }
