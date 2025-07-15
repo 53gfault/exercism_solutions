@@ -38,9 +38,10 @@ class Scrabble {
 
     int getScore() {
 		int total = 0;
+		word = word.toUpperCase();
 		for( int i = 0; i < word.length(); i++ ) {
 			char ch = word.charAt( i );
-			total += ( ch >= 65 && ch <= 90 ) ? scores.get( ch ) : scores.get( ( char )( ch - 32 ) );
+			total += scores.getOrDefault( ch, 0 );
 		}
 		return total;
     }
