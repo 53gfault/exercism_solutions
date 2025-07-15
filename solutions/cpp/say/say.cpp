@@ -47,15 +47,12 @@ say::in_english(long long num) {
     say::validate(num);
     if(!num)
         return "zero";
-    std::string result, partial_result, delim = "";
+    std::string result, partial_result;
     int segment = 0, partial_num = 0;
     do {
         partial_num = get_three_digits_chunk(num);
         partial_result = stringify_three_digits_chunk(partial_num, segment++);
-        if(!result.empty() && !partial_result.empty())
-            delim = " ";
-        result = partial_result + delim + result;
-        delim = "";
+        result = partial_result + (!result.empty() && !partial_result.empty() ? " " : "") + result;
     } while(num != 0);
     return result;
 }
