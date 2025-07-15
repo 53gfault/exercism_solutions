@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 namespace kindergarten_garden {
-    enum class Plants {
+    enum class Plants: char {
         clover = 'C',
         grass = 'G',
         violets = 'V',
